@@ -19,7 +19,7 @@ BASE_DOC_URL = "https://www.europarl.europa.eu/doceo/document/"
 # Hugging Face Dataset configuration
 # HF_USERNAME will be read from GitHub Secrets in Actions, or defaults locally
 HF_USERNAME = os.environ.get("HF_USERNAME", "YOUR_HUGGINGFACE_USERNAME") 
-HF_DATASET_NAME = "europarl-dutch-minutes" # You can change this name if you like
+HF_DATASET_NAME = "Dutch-European-Parliament-Minutes" # You can change this name if you like
 HF_REPO_ID = f"{HF_USERNAME}/{HF_DATASET_NAME}"
 
 # Define the XML namespaces for lxml parsing
