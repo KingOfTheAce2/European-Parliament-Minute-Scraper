@@ -1,0 +1,53 @@
+name: Europarl Dutch Minutes Scraper
+
+on:
+  workflow_dispatch: # Allows you to manually trigger the workflow from GitHub Actions tab
+  schedule:
+    # Runs at 00:00 UTC every Sunday. You can adjust the cron expression.
+    # Examples:
+    #   '0 0 * * *' : Daily at midnight UTC
+    #   '0 0 * * SUN' : Weekly on Sunday at midnight UTC
+    #   '0 0 * * MON-FRI' : Monday to Friday at midnight UTC
+    - cron: '0 0 * * SUN' 
+
+jobs:
+  scrape_and_upload:
+    runs-on: ubuntu-latest # Uses a Linux virtual machine
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4 # Action to check out your repository code
+
+    - name: Set up Python
+      uses: actions/setup-python@v5 # Action to set up Python environment
+      with:
+        python-version: '3.x' # Use the latest available Python 3 version
+
+    - name: Install dependencies
+      run: |
+        # Install Python dependencies from requirements.txt
+        pip install -r requirements.txt
+
+    - name: Run Python script
+      env:
+        # Securely pass Hugging Face API token and username from GitHub Secrets
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        HF_USERNAME: ${{ secrets.HF_USERNAME }}
+      run: |
+        python main.py
+
+    - name: Upload scraped URLs as artifact
+      uses: actions/upload-artifact@v4 # Action to upload workflow artifacts
+      if: always() # Upload even if previous steps failed, for debugging
+      with:
+        name: europarl-xml-urls
+        path: europarl_xml_urls.txt
+        retention-days: 7 # Keep artifact for 7 days
+
+    - name: Upload processed data as artifact
+      uses: actions/upload-artifact@v4
+      if: always() # Upload even if previous steps failed
+      with:
+        name: europarl-dutch-data-sample
+        path: europarl_dutch_data_sample.json
+        retention-days: 7 # Keep artifact for 7 days
